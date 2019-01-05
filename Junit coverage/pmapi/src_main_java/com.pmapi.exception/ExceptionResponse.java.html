@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../jacoco-resources/report.gif" type="image/gif"/><title>ExceptionResponse.java</title><link rel="stylesheet" href="../../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">SpringBootWebApplicationTest (24 Dec, 2018 3:29:19 PM)</a> &gt; <a href="../../index.html" class="el_group">pmapi</a> &gt; <a href="../index.html" class="el_bundle">src/main/java</a> &gt; <a href="index.source.html" class="el_package">com.pmapi.exception</a> &gt; <span class="el_source">ExceptionResponse.java</span></div><h1>ExceptionResponse.java</h1><pre class="source lang-java linenums">package com.pmapi.exception;
+
+
+import java.io.Serializable;
+
+
+<span class="fc" id="L7">public class ExceptionResponse implements Serializable</span>
+{
+	private static final long serialVersionUID = 1L;
+
+	private String errorCode;
+	
+	private String errorMessage;
+	
+	/**
+	 * @return the errorCode
+	 */
+	public String getErrorCode() {
+<span class="fc" id="L19">		return errorCode;</span>
+	}
+
+	/**
+	 * @param errorCode the errorCode to set
+	 */
+	public void setErrorCode(String errorCode) {
+<span class="fc" id="L26">		this.errorCode = errorCode;</span>
+<span class="fc" id="L27">	}</span>
+
+	/**
+	 * @return the errorMessage
+	 */
+	public String getErrorMessage() {
+<span class="fc" id="L33">		return errorMessage;</span>
+	}
+
+	/**
+	 * @param errorMessage the errorMessage to set
+	 */
+	public void setErrorMessage(String errorMessage) {
+<span class="fc" id="L40">		this.errorMessage = errorMessage;</span>
+<span class="fc" id="L41">	}</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.2.201808211720</span>SpringBootWebApplicationTest (24 Dec, 2018 3:29:19 PM)</div></body></html>

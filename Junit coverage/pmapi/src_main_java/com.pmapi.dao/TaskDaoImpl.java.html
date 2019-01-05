@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../jacoco-resources/report.gif" type="image/gif"/><title>TaskDaoImpl.java</title><link rel="stylesheet" href="../../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">SpringBootWebApplicationTest (24 Dec, 2018 3:29:19 PM)</a> &gt; <a href="../../index.html" class="el_group">pmapi</a> &gt; <a href="../index.html" class="el_bundle">src/main/java</a> &gt; <a href="index.source.html" class="el_package">com.pmapi.dao</a> &gt; <span class="el_source">TaskDaoImpl.java</span></div><h1>TaskDaoImpl.java</h1><pre class="source lang-java linenums">package com.pmapi.dao;
+
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+
+import org.hibernate.Criteria;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
+import org.hibernate.criterion.Restrictions;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import com.pmapi.constants.PMConstants;
+import com.pmapi.exception.PMException;
+import com.pmapi.model.ParentTask;
+import com.pmapi.model.Project;
+import com.pmapi.model.Task;
+import com.pmapi.model.User;
+import com.pmapi.to.TaskTO;
+
+@Component
+<span class="fc" id="L28">public class TaskDaoImpl implements TaskDao, PMConstants {</span>
+	
+<span class="fc" id="L30">	private final Logger logger = LoggerFactory.getLogger(this.getClass());</span>
+
+	@Autowired
+    private SessionFactory sessionFactory;	
+
+	@Override
+	public String saveTask(TaskTO taskTo) throws PMException {	
+<span class="fc" id="L37">		Session session = null;</span>
+<span class="fc" id="L38">		Transaction tx = null;</span>
+<span class="fc" id="L39">		DateFormat formatter=new SimpleDateFormat(YYYY_MM_DD);</span>
+<span class="fc" id="L40">		Task task = new Task();</span>
+<span class="fc" id="L41">		Project project=new Project();</span>
+<span class="fc" id="L42">		ParentTask parenttask=new ParentTask();</span>
+		try {
+<span class="fc" id="L44">			session = sessionFactory.openSession();</span>
+<span class="fc" id="L45">			tx = session.beginTransaction();			</span>
+<span class="fc bfc" id="L46" title="All 2 branches covered.">			if(0!=taskTo.getTaskId()) {</span>
+<span class="fc" id="L47">				task.setTaskId(taskTo.getTaskId());</span>
+			}	
+<span class="fc" id="L49">			task.setTask(taskTo.getTask());</span>
+<span class="fc" id="L50">			project.setProjectId(taskTo.getProjectId());</span>
+<span class="fc" id="L51">			task.setProject(project);</span>
+<span class="fc" id="L52">			parenttask.setParentId(taskTo.getParentId());</span>
+<span class="fc" id="L53">			task.setParentTask(parenttask);</span>
+<span class="fc" id="L54">			task.setPriority(taskTo.getPriority());</span>
+<span class="fc" id="L55">			task.setStartDate(formatter.parse(taskTo.getStartDate()));</span>
+<span class="fc" id="L56">			task.setEndDate(formatter.parse(taskTo.getEndDate()));	</span>
+<span class="fc" id="L57">			task.setStatus(taskTo.getStatus());</span>
+<span class="fc" id="L58">			task=(Task) session.merge(task);</span>
+<span class="fc" id="L59">			tx.commit();</span>
+<span class="fc" id="L60">			this.updateUser(task.getTaskId(),taskTo.getUserId());</span>
+<span class="fc" id="L61">			return SUCCESS;</span>
+<span class="fc" id="L62">		} catch(Exception ex) {</span>
+<span class="fc" id="L63">			logger.error(&quot;Exception occured in saveTask : &quot; + ex);</span>
+<span class="fc" id="L64">			throw new PMException(TECH_ERROR_CODE, TECH_ERROR_MESSAGE, STATUS_500);</span>
+		} finally {
+<span class="fc" id="L66">			session.close();</span>
+		}		
+	}
+
+	@Override
+	public String saveParentTask(TaskTO task) throws PMException {
+<span class="fc" id="L72">		Session session = null;</span>
+<span class="fc" id="L73">		Transaction tx = null;</span>
+<span class="fc" id="L74">		ParentTask parenttask=new ParentTask();</span>
+		try {
+<span class="fc" id="L76">			session = sessionFactory.openSession();</span>
+<span class="fc" id="L77">			tx = session.beginTransaction();			</span>
+<span class="pc bpc" id="L78" title="1 of 2 branches missed.">			if(0!=task.getTaskId()) {</span>
+<span class="nc" id="L79">				parenttask.setParentId(task.getTaskId());</span>
+			}	
+<span class="fc" id="L81">			parenttask.setParentTask(task.getTask());</span>
+<span class="fc" id="L82">			session.saveOrUpdate(parenttask);</span>
+<span class="fc" id="L83">			tx.commit();</span>
+<span class="fc" id="L84">			return SUCCESS;</span>
+<span class="nc" id="L85">		} catch(Exception ex) {</span>
+<span class="nc" id="L86">			logger.error(&quot;Exception occured in saveParentTask : &quot; + ex);</span>
+<span class="nc" id="L87">			throw new PMException(TECH_ERROR_CODE, TECH_ERROR_MESSAGE, STATUS_500);</span>
+		} finally {
+<span class="fc" id="L89">			session.close();</span>
+		}	
+	}
+	private void updateUser(int taskId,int userId)throws PMException {	
+<span class="fc" id="L93">		Session session = null;</span>
+<span class="fc" id="L94">		Transaction tx = null;</span>
+		Set&lt;User&gt; useSet;
+<span class="fc" id="L96">		User user=null;</span>
+		try {
+<span class="fc" id="L98">			session = sessionFactory.openSession();		</span>
+<span class="fc" id="L99">			tx = session.beginTransaction();</span>
+<span class="fc" id="L100">			Task task= session.get(Task.class, taskId);</span>
+<span class="fc" id="L101">			useSet=task.getUser();</span>
+<span class="pc bpc" id="L102" title="1 of 4 branches missed.">    		if(null!=useSet&amp;&amp;!useSet.isEmpty()) {</span>
+<span class="fc bfc" id="L103" title="All 2 branches covered.">    			for(User userObj:useSet) {</span>
+<span class="fc" id="L104">    				userObj.setTaskId(0);</span>
+<span class="fc" id="L105">    				session.merge(userObj);</span>
+    			}
+    		}
+<span class="fc" id="L108">    		user=session.get(User.class, userId);</span>
+<span class="fc" id="L109">    		user.setTaskId(task.getTaskId());</span>
+<span class="fc" id="L110">			session.merge(user);</span>
+<span class="fc" id="L111">			tx.commit();</span>
+<span class="pc" id="L112">		} catch(Exception ex) {</span>
+<span class="nc" id="L113">			logger.error(&quot;Exception occured in updateUser : &quot; + ex);</span>
+<span class="nc" id="L114">			throw new PMException(TECH_ERROR_CODE, TECH_ERROR_MESSAGE, STATUS_500);</span>
+		} finally {
+<span class="fc" id="L116">			session.close();</span>
+		}
+<span class="fc" id="L118">	}</span>
+
+	@SuppressWarnings(&quot;unchecked&quot;)
+	@Override
+	public List&lt;TaskTO&gt; getParentTasks() throws PMException {		
+<span class="fc" id="L123">		List&lt;TaskTO&gt; taskToList = null;</span>
+<span class="fc" id="L124">		Session session = null;</span>
+		try {
+<span class="fc" id="L126">			session = sessionFactory.openSession();</span>
+<span class="fc" id="L127">	        List&lt;ParentTask&gt; parentTaskList = session.createCriteria(ParentTask.class).list();</span>
+<span class="pc bpc" id="L128" title="2 of 4 branches missed.">	        if(null != parentTaskList &amp;&amp; !parentTaskList.isEmpty()) {</span>
+<span class="fc" id="L129">	        	taskToList = new ArrayList&lt;TaskTO&gt;();	        	</span>
+<span class="fc bfc" id="L130" title="All 2 branches covered.">	        	for(ParentTask task : parentTaskList) {</span>
+<span class="fc" id="L131">	        		TaskTO taskTO = new TaskTO();</span>
+<span class="fc" id="L132">	        		taskTO.setTaskId(task.getParentId());</span>
+<span class="fc" id="L133">	        		taskTO.setTask(task.getParentTask());</span>
+<span class="fc" id="L134">	        		taskToList.add(taskTO);</span>
+	        	}
+	        }			
+<span class="pc" id="L137">		} catch(Exception ex) {</span>
+<span class="nc" id="L138">			logger.error(&quot;Exception in getParentTasks : &quot; + ex);</span>
+<span class="nc" id="L139">			throw new PMException(TECH_ERROR_CODE, TECH_ERROR_MESSAGE, STATUS_500);</span>
+		} finally {
+<span class="fc" id="L141">			session.close();</span>
+		}
+<span class="fc" id="L143">		return taskToList;</span>
+	}
+
+	@SuppressWarnings(&quot;unchecked&quot;)
+	@Override
+	public List&lt;TaskTO&gt; getAllTasks(int ProjectId) throws PMException {		
+<span class="fc" id="L149">		List&lt;TaskTO&gt; taskToList = null;</span>
+		List&lt;Task&gt; taskList;
+<span class="fc" id="L151">		Session session = null;</span>
+		ParentTask parentTask;
+		Project project;
+		Criteria criteria;
+		Set&lt;User&gt; useSet;
+		try {
+<span class="fc" id="L157">			session = sessionFactory.openSession();</span>
+<span class="fc" id="L158">			criteria=session.createCriteria(Task.class);</span>
+<span class="fc" id="L159">			criteria.add(Restrictions.eq(PROJECT_ID, ProjectId));</span>
+<span class="fc" id="L160">			taskList= criteria.list();</span>
+<span class="pc bpc" id="L161" title="2 of 4 branches missed.">	        if(null != taskList &amp;&amp; !taskList.isEmpty()) {</span>
+<span class="fc" id="L162">	        	taskToList = new ArrayList&lt;TaskTO&gt;();	        	</span>
+<span class="fc bfc" id="L163" title="All 2 branches covered.">	        	for(Task task : taskList) {</span>
+<span class="fc" id="L164">	        		TaskTO taskTO = new TaskTO();</span>
+<span class="fc" id="L165">	        		taskTO.setTaskId(task.getTaskId());</span>
+<span class="fc" id="L166">	        		taskTO.setTask(task.getTask());</span>
+<span class="fc" id="L167">	        		parentTask=task.getParentTask();</span>
+<span class="pc bpc" id="L168" title="1 of 2 branches missed.">	        		if(null!=parentTask) {</span>
+<span class="fc" id="L169">	        			taskTO.setParentId(parentTask.getParentId());</span>
+<span class="fc" id="L170">	        			taskTO.setParentTask(parentTask.getParentTask());</span>
+	        		}
+<span class="fc" id="L172">	        		project=task.getProject();</span>
+<span class="pc bpc" id="L173" title="1 of 2 branches missed.">	        		if(null!=project) {</span>
+<span class="fc" id="L174">	        			taskTO.setProjectId(project.getProjectId());</span>
+<span class="fc" id="L175">	        			taskTO.setProjectName(project.getProject());</span>
+	        		}
+<span class="fc" id="L177">	        		taskTO.setStartDate(task.getStartDate().toString());</span>
+<span class="fc" id="L178">	        		taskTO.setEndDate(task.getEndDate().toString());</span>
+<span class="fc" id="L179">	        		taskTO.setPriority(task.getPriority());</span>
+<span class="fc" id="L180">	        		taskTO.setStatus(task.getStatus());</span>
+<span class="fc" id="L181">	        		useSet=task.getUser();</span>
+<span class="pc bpc" id="L182" title="2 of 4 branches missed.">	        		if(null!=useSet&amp;&amp;!useSet.isEmpty()) {</span>
+<span class="fc bfc" id="L183" title="All 2 branches covered.">	        			for(User user:useSet) {</span>
+<span class="fc" id="L184">	        				taskTO.setUserId(user.getUserId());</span>
+<span class="fc" id="L185">	        				taskTO.setUserName(user.getFname()+&quot;,&quot;+user.getLname());</span>
+	        			}
+	        		}
+	        		
+<span class="fc" id="L189">	        		taskToList.add(taskTO);</span>
+	        	}
+	        }			
+<span class="pc" id="L192">		} catch(Exception ex) {</span>
+<span class="nc" id="L193">			logger.error(&quot;Exception in getAllTasks : &quot; + ex);</span>
+<span class="nc" id="L194">			throw new PMException(TECH_ERROR_CODE, TECH_ERROR_MESSAGE, STATUS_500);</span>
+		} finally {
+<span class="fc" id="L196">			session.close();</span>
+		}
+<span class="fc" id="L198">		return taskToList;</span>
+	}
+
+	@Override
+	public String endTask(int taskId) throws PMException {
+<span class="fc" id="L203">		Session session = null;</span>
+<span class="fc" id="L204">		Transaction tx = null;</span>
+		Task task;
+		try {
+<span class="fc" id="L207">			session = sessionFactory.openSession();</span>
+<span class="fc" id="L208">			tx = session.beginTransaction();	</span>
+<span class="fc" id="L209">			task=session.load(Task.class, taskId);</span>
+<span class="fc" id="L210">			task.setStatus(ENDTASK);</span>
+<span class="fc" id="L211">			session.saveOrUpdate(task);</span>
+<span class="fc" id="L212">			tx.commit();</span>
+<span class="fc" id="L213">			return SUCCESS;</span>
+<span class="fc" id="L214">		} catch(Exception ex) {</span>
+<span class="fc" id="L215">			logger.error(&quot;Exception occured in saveParentTask : &quot; + ex);</span>
+<span class="fc" id="L216">			throw new PMException(TECH_ERROR_CODE, TECH_ERROR_MESSAGE, STATUS_500);</span>
+		} finally {
+<span class="fc" id="L218">			session.close();</span>
+		}	
+	}
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.2.201808211720</span>SpringBootWebApplicationTest (24 Dec, 2018 3:29:19 PM)</div></body></html>

@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../jacoco-resources/report.gif" type="image/gif"/><title>ProjectDaoImpl.java</title><link rel="stylesheet" href="../../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">SpringBootWebApplicationTest (24 Dec, 2018 3:29:19 PM)</a> &gt; <a href="../../index.html" class="el_group">pmapi</a> &gt; <a href="../index.html" class="el_bundle">src/main/java</a> &gt; <a href="index.source.html" class="el_package">com.pmapi.dao</a> &gt; <span class="el_source">ProjectDaoImpl.java</span></div><h1>ProjectDaoImpl.java</h1><pre class="source lang-java linenums">package com.pmapi.dao;
+
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import com.pmapi.constants.PMConstants;
+import com.pmapi.exception.PMException;
+import com.pmapi.model.Project;
+import com.pmapi.model.Task;
+import com.pmapi.model.User;
+import com.pmapi.to.ProjectTO;
+
+@Component
+<span class="fc" id="L25">public class ProjectDaoImpl implements ProjectDao, PMConstants {</span>
+	
+<span class="fc" id="L27">	private final Logger logger = LoggerFactory.getLogger(this.getClass());</span>
+
+	@Autowired
+    private SessionFactory sessionFactory;
+	
+	@SuppressWarnings(&quot;unchecked&quot;)
+	@Override
+	public List&lt;ProjectTO&gt; getAllProjects() throws PMException {		
+<span class="fc" id="L35">		List&lt;ProjectTO&gt; projectTOs = null;</span>
+<span class="fc" id="L36">		Session session = null;</span>
+		Set&lt;User&gt; useSet;
+		Set&lt;Task&gt; tasks;
+<span class="fc" id="L39">		int CompletedTasks = 0;</span>
+		try {
+<span class="fc" id="L41">			session = sessionFactory.openSession();</span>
+<span class="fc" id="L42">	        List&lt;Project&gt; ProjectList = session.createCriteria(Project.class).list();</span>
+<span class="pc bpc" id="L43" title="2 of 4 branches missed.">	        if(null != ProjectList &amp;&amp; !ProjectList.isEmpty()) {</span>
+<span class="fc" id="L44">	        	projectTOs = new ArrayList&lt;ProjectTO&gt;();	        	</span>
+<span class="fc bfc" id="L45" title="All 2 branches covered.">	        	for(Project project : ProjectList) {</span>
+<span class="fc" id="L46">	        		ProjectTO projectTO = new ProjectTO();</span>
+<span class="fc" id="L47">	        		projectTO.setProjectId(project.getProjectId());</span>
+<span class="fc" id="L48">	        		projectTO.setProject(project.getProject());</span>
+<span class="fc" id="L49">	        		projectTO.setPriority(project.getPriority());</span>
+<span class="fc" id="L50">	        		projectTO.setStartDate(project.getStartDate().toString());</span>
+<span class="fc" id="L51">	        		projectTO.setEndDate(project.getEndDate().toString());</span>
+<span class="fc" id="L52">	        		useSet=project.getUser();</span>
+<span class="pc bpc" id="L53" title="2 of 4 branches missed.">	        		if(null!=useSet&amp;&amp;!useSet.isEmpty()) {</span>
+<span class="fc bfc" id="L54" title="All 2 branches covered.">	        			for(User user:useSet) {</span>
+<span class="fc" id="L55">	        			 projectTO.setManagerId(user.getUserId());</span>
+<span class="fc" id="L56">	        			 projectTO.setManagerName(user.getFname()+&quot;,&quot;+user.getLname());</span>
+	        			}
+	        		}
+<span class="fc" id="L59">	        		tasks=project.getTask();</span>
+<span class="fc" id="L60">	        		projectTO.setTaskCount(tasks.size());</span>
+<span class="fc" id="L61">	        		CompletedTasks = 0;</span>
+<span class="pc bpc" id="L62" title="1 of 2 branches missed.">	        		for(Task tsk:tasks) {</span>
+<span class="nc bnc" id="L63" title="All 2 branches missed.">	        			 if(COMPLETED.equalsIgnoreCase(tsk.getStatus())) {</span>
+<span class="nc" id="L64">	        				 CompletedTasks++;</span>
+	        			 }
+	        		 }
+<span class="fc" id="L67">	        		projectTO.setTaskCompleted(CompletedTasks);</span>
+<span class="fc" id="L68">	        		projectTOs.add(projectTO);</span>
+	        	}
+	        }			
+<span class="pc" id="L71">		} catch(Exception ex) {</span>
+<span class="nc" id="L72">			logger.error(&quot;Exception in getAllProjects : &quot; + ex);</span>
+<span class="nc" id="L73">			throw new PMException(TECH_ERROR_CODE, TECH_ERROR_MESSAGE, STATUS_500);</span>
+		} finally {
+<span class="fc" id="L75">			session.close();</span>
+		}
+<span class="fc" id="L77">		return projectTOs;</span>
+	}
+	
+	@Override
+	public String saveProject(ProjectTO projectTO) throws PMException {		
+<span class="fc" id="L82">		Session session = null;</span>
+<span class="fc" id="L83">		Transaction tx = null;</span>
+<span class="fc" id="L84">		DateFormat formatter=new SimpleDateFormat(YYYY_MM_DD);</span>
+<span class="fc" id="L85">		Project project = new Project();</span>
+		try {
+<span class="fc" id="L87">			session = sessionFactory.openSession();</span>
+<span class="fc" id="L88">			tx = session.beginTransaction();</span>
+			
+<span class="fc bfc" id="L90" title="All 2 branches covered.">			if(0!=projectTO.getProjectId()) {</span>
+<span class="fc" id="L91">				project.setProjectId(projectTO.getProjectId());</span>
+			}	
+<span class="fc" id="L93">			project.setProject(projectTO.getProject());</span>
+<span class="fc" id="L94">			project.setPriority(projectTO.getPriority());</span>
+<span class="fc" id="L95">			project.setStartDate(formatter.parse(projectTO.getStartDate()));</span>
+<span class="fc" id="L96">			project.setEndDate(formatter.parse(projectTO.getEndDate()));	</span>
+<span class="fc" id="L97">			project=(Project) session.merge(project);</span>
+<span class="fc" id="L98">			session.flush();</span>
+<span class="fc" id="L99">			tx.commit();</span>
+<span class="fc" id="L100">			this.updateUser(project.getProjectId(),projectTO.getManagerId());</span>
+<span class="fc" id="L101">			return SUCCESS;</span>
+<span class="fc" id="L102">		} catch(Exception ex) {</span>
+<span class="fc" id="L103">			logger.error(&quot;Exception occured in saveProject : &quot; + ex);</span>
+<span class="fc" id="L104">			throw new PMException(TECH_ERROR_CODE, TECH_ERROR_MESSAGE, STATUS_500);</span>
+		} finally {
+<span class="fc" id="L106">			session.close();</span>
+		}		
+	}
+
+	@Override
+	public String suspendProject(int projectId) throws PMException {	
+<span class="fc" id="L112">		Session session = null;</span>
+<span class="fc" id="L113">		Transaction tx = null;</span>
+		try {
+<span class="fc" id="L115">			session = sessionFactory.openSession();		</span>
+<span class="fc" id="L116">			tx = session.beginTransaction();</span>
+<span class="fc" id="L117">			Project project= session.get(Project.class, projectId);</span>
+<span class="fc" id="L118">			session.delete(project);</span>
+<span class="fc" id="L119">			tx.commit();</span>
+<span class="fc" id="L120">			return &quot;Success&quot;;</span>
+<span class="fc" id="L121">		} catch(Exception ex) {</span>
+<span class="fc" id="L122">			logger.error(&quot;Exception occured in suspendProject : &quot; + ex);</span>
+<span class="fc" id="L123">			throw new PMException(TECH_ERROR_CODE, TECH_ERROR_MESSAGE, STATUS_500);</span>
+		} finally {
+<span class="fc" id="L125">			session.close();</span>
+		}
+	}
+	
+	private void updateUser(int projectId,int userId)throws PMException {	
+<span class="fc" id="L130">		Session session = null;</span>
+<span class="fc" id="L131">		Transaction tx = null;</span>
+		Set&lt;User&gt; useSet;
+<span class="fc" id="L133">		User user=null;</span>
+		try {
+<span class="fc" id="L135">			session = sessionFactory.openSession();		</span>
+<span class="fc" id="L136">			tx = session.beginTransaction();</span>
+<span class="fc" id="L137">			Project project= session.get(Project.class, projectId);</span>
+<span class="fc" id="L138">			useSet=project.getUser();</span>
+<span class="pc bpc" id="L139" title="1 of 4 branches missed.">    		if(null!=useSet&amp;&amp;!useSet.isEmpty()) {</span>
+<span class="fc bfc" id="L140" title="All 2 branches covered.">    			for(User userObj:useSet) {</span>
+<span class="fc" id="L141">    				userObj.setProjectId(0);</span>
+<span class="fc" id="L142">    				session.merge(userObj);</span>
+    			}
+    		}
+<span class="fc" id="L145">    		user=session.get(User.class, userId);</span>
+<span class="fc" id="L146">    		user.setProjectId(project.getProjectId());</span>
+<span class="fc" id="L147">			session.merge(user);</span>
+<span class="fc" id="L148">			tx.commit();</span>
+<span class="fc" id="L149">		} catch(Exception ex) {</span>
+<span class="fc" id="L150">			logger.error(&quot;Exception occured in updateUser : &quot; + ex);</span>
+<span class="fc" id="L151">			throw new PMException(TECH_ERROR_CODE, TECH_ERROR_MESSAGE, STATUS_500);</span>
+		} finally {
+<span class="fc" id="L153">			session.close();</span>
+		}
+<span class="fc" id="L155">	}</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.2.201808211720</span>SpringBootWebApplicationTest (24 Dec, 2018 3:29:19 PM)</div></body></html>

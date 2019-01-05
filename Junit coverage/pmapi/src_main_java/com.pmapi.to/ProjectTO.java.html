@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../jacoco-resources/report.gif" type="image/gif"/><title>ProjectTO.java</title><link rel="stylesheet" href="../../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">SpringBootWebApplicationTest (24 Dec, 2018 3:29:19 PM)</a> &gt; <a href="../../index.html" class="el_group">pmapi</a> &gt; <a href="../index.html" class="el_bundle">src/main/java</a> &gt; <a href="index.source.html" class="el_package">com.pmapi.to</a> &gt; <span class="el_source">ProjectTO.java</span></div><h1>ProjectTO.java</h1><pre class="source lang-java linenums">package com.pmapi.to;
+
+import java.io.Serializable;
+
+<span class="fc" id="L5">public class ProjectTO implements Serializable{</span>
+	private static final long serialVersionUID = 7047702343075258618L;
+	private int projectId;
+	private String project;
+	private String startDate;
+	private String endDate;
+	private int priority;
+	private int taskCount;
+	private int taskCompleted;
+	private int managerId;
+	private String managerName;
+	private int IsActive;
+	/**
+	 * @return the projectId
+	 */
+	public int getProjectId() {
+<span class="fc" id="L21">		return projectId;</span>
+	}
+	/**
+	 * @param projectId the projectId to set
+	 */
+	public void setProjectId(int projectId) {
+<span class="fc" id="L27">		this.projectId = projectId;</span>
+<span class="fc" id="L28">	}</span>
+	/**
+	 * @return the project
+	 */
+	public String getProject() {
+<span class="fc" id="L33">		return project;</span>
+	}
+	/**
+	 * @param project the project to set
+	 */
+	public void setProject(String project) {
+<span class="fc" id="L39">		this.project = project;</span>
+<span class="fc" id="L40">	}</span>
+	/**
+	 * @return the startDate
+	 */
+	public String getStartDate() {
+<span class="fc" id="L45">		return startDate;</span>
+	}
+	/**
+	 * @param startDate the startDate to set
+	 */
+	public void setStartDate(String startDate) {
+<span class="fc" id="L51">		this.startDate = startDate;</span>
+<span class="fc" id="L52">	}</span>
+	/**
+	 * @return the endDate
+	 */
+	public String getEndDate() {
+<span class="fc" id="L57">		return endDate;</span>
+	}
+	/**
+	 * @param endDate the endDate to set
+	 */
+	public void setEndDate(String endDate) {
+<span class="fc" id="L63">		this.endDate = endDate;</span>
+<span class="fc" id="L64">	}</span>
+	/**
+	 * @return the priority
+	 */
+	public int getPriority() {
+<span class="fc" id="L69">		return priority;</span>
+	}
+	/**
+	 * @param priority the priority to set
+	 */
+	public void setPriority(int priority) {
+<span class="fc" id="L75">		this.priority = priority;</span>
+<span class="fc" id="L76">	}</span>
+	/**
+	 * @return the taskCount
+	 */
+	public int getTaskCount() {
+<span class="fc" id="L81">		return taskCount;</span>
+	}
+	/**
+	 * @param taskCount the taskCount to set
+	 */
+	public void setTaskCount(int taskCount) {
+<span class="fc" id="L87">		this.taskCount = taskCount;</span>
+<span class="fc" id="L88">	}</span>
+	/**
+	 * @return the managerId
+	 */
+	public int getManagerId() {
+<span class="fc" id="L93">		return managerId;</span>
+	}
+	/**
+	 * @param managerId the managerId to set
+	 */
+	public void setManagerId(int managerId) {
+<span class="fc" id="L99">		this.managerId = managerId;</span>
+<span class="fc" id="L100">	}</span>
+	/**
+	 * @return the isActive
+	 */
+	public int getIsActive() {
+<span class="fc" id="L105">		return IsActive;</span>
+	}
+	/**
+	 * @param isActive the isActive to set
+	 */
+	public void setIsActive(int isActive) {
+<span class="nc" id="L111">		IsActive = isActive;</span>
+<span class="nc" id="L112">	}</span>
+	/**
+	 * @return the taskCompleted
+	 */
+	public int getTaskCompleted() {
+<span class="fc" id="L117">		return taskCompleted;</span>
+	}
+	/**
+	 * @param taskCompleted the taskCompleted to set
+	 */
+	public void setTaskCompleted(int taskCompleted) {
+<span class="fc" id="L123">		this.taskCompleted = taskCompleted;</span>
+<span class="fc" id="L124">	}</span>
+	/**
+	 * @return the managerName
+	 */
+	public String getManagerName() {
+<span class="fc" id="L129">		return managerName;</span>
+	}
+	/**
+	 * @param managerName the managerName to set
+	 */
+	public void setManagerName(String managerName) {
+<span class="fc" id="L135">		this.managerName = managerName;</span>
+<span class="fc" id="L136">	}</span>
+	
+	}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.2.201808211720</span>SpringBootWebApplicationTest (24 Dec, 2018 3:29:19 PM)</div></body></html>
